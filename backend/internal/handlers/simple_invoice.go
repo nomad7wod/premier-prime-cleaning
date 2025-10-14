@@ -316,7 +316,7 @@ func SimpleGenerateInvoiceFromBooking(c *gin.Context) {
 		booking.BillingAddress, booking.BillingCity, booking.BillingState, booking.BillingZipCode, "United States",
 		booking.Address, "Miami", "FL", "33101",
 		subtotal, taxRate, taxAmount, totalAmount,
-		"pending", "FL-59-123456789", false, "Payment due within 30 days of invoice date. Late payments subject to 1.5% monthly service charge.",
+		"pending", "92-396658", false, "Payment due within 30 days of invoice date. Late payments subject to 1.5% monthly service charge.",
 	).Scan(&invoiceID)
 
 	if err != nil {
@@ -597,7 +597,7 @@ func SimpleCreateCustomInvoice(c *gin.Context) {
 		request.BillingAddress, request.BillingCity, request.BillingState, request.BillingZipCode, "United States",
 		request.ServiceAddress, request.ServiceCity, request.ServiceState, request.ServiceZipCode,
 		subtotal, taxRate, taxAmount, totalAmount,
-		"pending", "FL-59-123456789", request.TaxExempt, request.TaxExemptReason, request.Notes, terms,
+		"pending", "92-396658", request.TaxExempt, request.TaxExemptReason, request.Notes, terms,
 	).Scan(&invoiceID)
 
 	if err != nil {
