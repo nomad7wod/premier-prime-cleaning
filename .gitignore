@@ -118,7 +118,6 @@ temp/
 *.dylib
 *.test
 *.out
-go.sum
 
 # Binaries for programs and plugins
 main
