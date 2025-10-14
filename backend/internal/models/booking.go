@@ -15,6 +15,7 @@ type Booking struct {
 	SpecialInstructions string    `json:"special_instructions" db:"special_instructions"`
 	TotalPrice          float64   `json:"total_price" db:"total_price" validate:"required,gt=0"`
 	Status              string    `json:"status" db:"status" validate:"required,oneof=pending confirmed in_progress completed cancelled"`
+	InvoiceID           *int      `json:"invoice_id" db:"invoice_id"` // Link to invoice if one exists
 	
 	// Guest booking information
 	GuestName           string    `json:"guest_name" db:"guest_name"`
@@ -80,6 +81,7 @@ type BookingResponse struct {
 	SpecialInstructions string    `json:"special_instructions"`
 	TotalPrice          float64   `json:"total_price"`
 	Status              string    `json:"status"`
+	InvoiceID           *int      `json:"invoice_id,omitempty"` // Link to invoice if one exists
 	GuestName           string    `json:"guest_name,omitempty"`
 	GuestEmail          string    `json:"guest_email,omitempty"`
 	GuestPhone          string    `json:"guest_phone,omitempty"`

@@ -225,7 +225,7 @@ func (r *BookingRepository) GetAllBookings() ([]models.BookingResponse, error) {
 	rows, err := database.DB.Query(
 		`SELECT b.id, b.user_id, u.email, b.service_id, s.name, b.scheduled_date, b.scheduled_time, 
 		         b.address, b.square_meters, COALESCE(b.special_instructions, '') as special_instructions, 
-		         b.total_price, b.status, 
+		         b.total_price, b.status, b.invoice_id,
 		         COALESCE(b.guest_name, '') as guest_name, 
 		         COALESCE(b.guest_email, '') as guest_email, 
 		         COALESCE(b.guest_phone, '') as guest_phone, 
@@ -248,7 +248,7 @@ func (r *BookingRepository) GetAllBookings() ([]models.BookingResponse, error) {
 			&booking.ID, &booking.UserID, &userEmail, &booking.ServiceID, &booking.ServiceName,
 			&booking.ScheduledDate, &booking.ScheduledTime, &booking.Address,
 			&booking.SquareMeters, &booking.SpecialInstructions, &booking.TotalPrice,
-			&booking.Status, &booking.GuestName, &booking.GuestEmail, &booking.GuestPhone,
+			&booking.Status, &booking.InvoiceID, &booking.GuestName, &booking.GuestEmail, &booking.GuestPhone,
 			&booking.IsGuestBooking, &booking.CreatedAt,
 		)
 		if err != nil {

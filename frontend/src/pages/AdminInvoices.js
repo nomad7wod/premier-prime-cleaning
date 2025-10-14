@@ -2,6 +2,537 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Custom Invoice Modal Component
+const CustomInvoiceModal = ({ onClose, onSubmit }) => {
+  const [formData, setFormData] = useState({
+    customer_name: '',
+    customer_email: '',
+    customer_phone: '',
+    billing_address: '',
+    billing_city: '',
+    billing_state: 'FL',
+    billing_zip_code: '',
+    service_address: '',
+    service_city: '',
+    service_state: 'FL',
+    service_zip_code: '',
+    service_name: '',
+    service_date: new Date().toISOString().split('T')[0],
+    subtotal: '',
+    tax_exempt: false,
+    tax_exempt_reason: '',
+    notes: '',
+    due_days: 30
+  });
+  
+  const [sameAsService, setSameAsService] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [calculatedTotal, setCalculatedTotal] = useState(0);
+  const [services, setServices] = useState([]);
+  const [selectedService, setSelectedService] = useState('');
+  const [isCustomService, setIsCustomService] = useState(false);
+
+  useEffect(() => {
+    // Total amount entered by user (tax-inclusive)
+    const totalAmount = parseFloat(formData.subtotal) || 0;
+    
+    if (formData.tax_exempt) {
+      // If tax exempt, total = subtotal
+      setCalculatedTotal(totalAmount);
+    } else {
+      // Calculate backwards: if total includes 7% tax, then total = subtotal * 1.07
+      // So subtotal = total / 1.07
+      // And tax = total - subtotal
+      setCalculatedTotal(totalAmount);
+    }
+  }, [formData.subtotal, formData.tax_exempt]);
+
+  useEffect(() => {
+    if (sameAsService) {
+      setFormData(prev => ({
+        ...prev,
+        service_address: prev.billing_address,
+        service_city: prev.billing_city,
+        service_state: prev.billing_state,
+        service_zip_code: prev.billing_zip_code
+      }));
+    }
+  }, [sameAsService, formData.billing_address, formData.billing_city, formData.billing_state, formData.billing_zip_code]);
+
+  // Fetch services on mount
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get('/api/services');
+        setServices(response.data.services || []);
+      } catch (err) {
+        console.error('Failed to fetch services:', err);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  const handleServiceChange = (e) => {
+    const value = e.target.value;
+    setSelectedService(value);
+    
+    if (value === 'custom') {
+      setIsCustomService(true);
+      setFormData(prev => ({ ...prev, service_name: '' }));
+    } else {
+      setIsCustomService(false);
+      const service = services.find(s => s.id === parseInt(value));
+      if (service) {
+        setFormData(prev => ({ ...prev, service_name: service.name }));
+      }
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Convert string values to numbers before submitting
+      const submitData = {
+        ...formData,
+        subtotal: parseFloat(formData.subtotal) || 0,
+        due_days: parseInt(formData.due_days) || 30
+      };
+      await onSubmit(submitData);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-4xl w-full my-8">
+        <div className="p-6 max-h-[85vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-6 sticky top-0 bg-white pb-4 border-b">
+            <div>
+              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                ✏️ Create Custom Invoice
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">Generate an invoice for services outside the booking system</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+              <div className="flex">
+                <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <div className="ml-3">
+                  <p className="text-sm text-red-800">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Customer Information */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <span className="text-2xl mr-2">👤</span>
+                Customer Information
+              </h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="customer_name"
+                    value={formData.customer_name}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="customer_email"
+                    value={formData.customer_email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="john@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="customer_phone"
+                    value={formData.customer_phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Billing Address */}
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <span className="text-2xl mr-2">🏠</span>
+                Billing Address
+              </h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Street Address *
+                  </label>
+                  <input
+                    type="text"
+                    name="billing_address"
+                    value={formData.billing_address}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="123 Main St"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    City *
+                  </label>
+                  <input
+                    type="text"
+                    name="billing_city"
+                    value={formData.billing_city}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Miami"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    State *
+                  </label>
+                  <input
+                    type="text"
+                    name="billing_state"
+                    value={formData.billing_state}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="FL"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ZIP Code *
+                  </label>
+                  <input
+                    type="text"
+                    name="billing_zip_code"
+                    value={formData.billing_zip_code}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="33101"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Service Address */}
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <span className="text-2xl mr-2">📍</span>
+                  Service Address
+                </h3>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sameAsService}
+                    onChange={(e) => setSameAsService(e.target.checked)}
+                    className="mr-2 w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
+                  />
+                  <span className="text-sm text-gray-700">Same as billing</span>
+                </label>
+              </div>
+              {!sameAsService && (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Street Address
+                    </label>
+                    <input
+                      type="text"
+                      name="service_address"
+                      value={formData.service_address}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="123 Main St"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      name="service_city"
+                      value={formData.service_city}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="Miami"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      State
+                    </label>
+                    <input
+                      type="text"
+                      name="service_state"
+                      value={formData.service_state}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="FL"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      ZIP Code
+                    </label>
+                    <input
+                      type="text"
+                      name="service_zip_code"
+                      value={formData.service_zip_code}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="33101"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Service Details */}
+            <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <span className="text-2xl mr-2">🧹</span>
+                Service Details
+              </h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Service *
+                  </label>
+                  <select
+                    value={selectedService}
+                    onChange={handleServiceChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  >
+                    <option value="">Select a service...</option>
+                    {services.map(service => (
+                      <option key={service.id} value={service.id}>
+                        {service.name}
+                      </option>
+                    ))}
+                    <option value="custom">➕ Custom Service</option>
+                  </select>
+                </div>
+                {isCustomService && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Custom Service Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="service_name"
+                      value={formData.service_name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Enter custom service name"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Service Date *
+                  </label>
+                  <input
+                    type="date"
+                    name="service_date"
+                    value={formData.service_date}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Amount (Tax Included) * $
+                  </label>
+                  <input
+                    type="number"
+                    name="subtotal"
+                    value={formData.subtotal}
+                    onChange={handleChange}
+                    required
+                    min="0"
+                    step="0.01"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="150.00"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Enter the final price you want to charge</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Payment Due (days)
+                  </label>
+                  <input
+                    type="number"
+                    name="due_days"
+                    value={formData.due_days}
+                    onChange={handleChange}
+                    min="1"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="30"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tax Information */}
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <span className="text-2xl mr-2">💰</span>
+                Tax & Pricing
+              </h3>
+              <div className="space-y-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="tax_exempt"
+                    checked={formData.tax_exempt}
+                    onChange={handleChange}
+                    className="mr-2 w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Tax Exempt</span>
+                </label>
+                {formData.tax_exempt && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tax Exempt Reason
+                    </label>
+                    <input
+                      type="text"
+                      name="tax_exempt_reason"
+                      value={formData.tax_exempt_reason}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., Non-profit organization"
+                    />
+                  </div>
+                )}
+                <div className="bg-white rounded-lg p-4 border-2 border-indigo-200">
+                  <div className="flex justify-between pt-2 border-b-2 border-indigo-200 pb-2 mb-2">
+                    <span className="text-lg font-bold text-gray-900">Total Amount:</span>
+                    <span className="text-lg font-bold text-indigo-600">${calculatedTotal.toFixed(2)}</span>
+                  </div>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    {!formData.tax_exempt && (
+                      <>
+                        <div className="flex justify-between">
+                          <span>Includes FL Tax (7%):</span>
+                          <span className="font-medium">${(calculatedTotal - (calculatedTotal / 1.07)).toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Subtotal (before tax):</span>
+                          <span className="font-medium">${(calculatedTotal / 1.07).toFixed(2)}</span>
+                        </div>
+                      </>
+                    )}
+                    {formData.tax_exempt && (
+                      <div className="flex justify-between text-green-700">
+                        <span>✓ Tax Exempt</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <span className="text-2xl mr-2">📝</span>
+                Additional Notes
+              </h3>
+              <textarea
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                rows={3}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                placeholder="Any special terms or conditions..."
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-4 pt-4 sticky bottom-0 bg-white pb-4 border-t">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
+              >
+                {loading ? 'Creating...' : 'Create Custom Invoice'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AdminInvoices = () => {
   const navigate = useNavigate();
   const [invoices, setInvoices] = useState([]);
@@ -10,6 +541,7 @@ const AdminInvoices = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCustomInvoiceModal, setShowCustomInvoiceModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [stats, setStats] = useState({
     total: 0,
@@ -55,9 +587,11 @@ const AdminInvoices = () => {
   const fetchBookings = async () => {
     try {
       const response = await axios.get('/api/admin/bookings');
+      console.log('All bookings:', response.data.bookings); // Debug log
       const completedBookings = response.data.bookings.filter(
-        booking => booking.status === 'completed' && !booking.invoice_id
+        booking => booking.status === 'completed' && (booking.invoice_id === null || booking.invoice_id === undefined)
       );
+      console.log('Filtered bookings (no invoice):', completedBookings); // Debug log
       setBookings(completedBookings);
     } catch (err) {
       console.error('Failed to fetch bookings:', err);
@@ -74,7 +608,24 @@ const AdminInvoices = () => {
       fetchInvoices();
       fetchBookings();
     } catch (err) {
-      setError('Failed to create invoice');
+      const errorMessage = err.response?.data?.error || 'Failed to create invoice';
+      setError(errorMessage);
+      // Close modal after showing error briefly
+      setTimeout(() => {
+        setShowCreateModal(false);
+        setSelectedBooking(null);
+      }, 3000);
+    }
+  };
+
+  const createCustomInvoice = async (formData) => {
+    try {
+      const response = await axios.post('/api/admin/invoices/custom', formData);
+      setShowCustomInvoiceModal(false);
+      fetchInvoices();
+      return response.data;
+    } catch (err) {
+      throw new Error(err.response?.data?.error || 'Failed to create custom invoice');
     }
   };
 
@@ -247,15 +798,26 @@ const AdminInvoices = () => {
             </div>
 
             {/* Create Invoice Button */}
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              <span>Create Invoice</span>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowCustomInvoiceModal(true)}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                <span>Custom Invoice</span>
+              </button>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>From Booking</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -363,7 +925,7 @@ const AdminInvoices = () => {
             <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">✨ Create Invoice</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">✨ Create Invoice from Booking</h2>
                   <button
                     onClick={() => setShowCreateModal(false)}
                     className="text-gray-400 hover:text-gray-600"
@@ -436,6 +998,14 @@ const AdminInvoices = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Custom Invoice Modal */}
+        {showCustomInvoiceModal && (
+          <CustomInvoiceModal
+            onClose={() => setShowCustomInvoiceModal(false)}
+            onSubmit={createCustomInvoice}
+          />
         )}
       </div>
     </div>

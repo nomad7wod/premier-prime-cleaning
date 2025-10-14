@@ -27,11 +27,22 @@ const InvoiceTemplate = ({ invoice }) => {
   };
 
   const formatTime = (timeString) => {
-    return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
+    if (!timeString || timeString === '00:00' || timeString === '00:00:00') {
+      return 'N/A';
+    }
+    try {
+      const time = new Date(`2000-01-01T${timeString}`);
+      if (isNaN(time.getTime())) {
+        return 'N/A';
+      }
+      return time.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (error) {
+      return 'N/A';
+    }
   };
 
   return (
@@ -43,8 +54,8 @@ const InvoiceTemplate = ({ invoice }) => {
             <h1 className="text-4xl font-bold text-blue-600 mb-2">✨ PREMIER PRIME</h1>
             <p className="text-lg text-gray-600">Professional Cleaning Services</p>
             <div className="mt-4 text-sm text-gray-600">
-              <p>📧 hello@premierprime.com</p>
-              <p>📞 (555) 123-CLEAN</p>
+              <p>📧 adaperez@premierprime.com</p>
+              <p>📞 (561) 452-3128</p>
               <p>🌐 www.premierprime.com</p>
               <p>🆔 Florida Tax ID: FL-123456789</p>
             </div>
@@ -71,17 +82,6 @@ const InvoiceTemplate = ({ invoice }) => {
             <div className="flex justify-between">
               <span className="text-gray-600">Due Date:</span>
               <span className="font-medium">{formatDate(invoice.due_date)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Status:</span>
-              <span className={`font-bold px-2 py-1 rounded text-xs ${
-                invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
-                invoice.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {invoice.status.toUpperCase()}
-              </span>
             </div>
           </div>
         </div>
@@ -116,22 +116,28 @@ const InvoiceTemplate = ({ invoice }) => {
                   <span className="text-gray-600">Service Date:</span>
                   <span className="font-medium">{formatDate(invoice.service_date)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Service Time:</span>
-                  <span className="font-medium">{formatTime(invoice.service_time)}</span>
-                </div>
+                {invoice.service_time && invoice.service_time !== '00:00' && invoice.service_time !== '00:00:00' && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Service Time:</span>
+                    <span className="font-medium">{formatTime(invoice.service_time)}</span>
+                  </div>
+                )}
               </div>
             </div>
             <div>
               <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Duration:</span>
-                  <span className="font-medium">{invoice.service_duration} hours</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Area Size:</span>
-                  <span className="font-medium">{invoice.square_meters} sq meters</span>
-                </div>
+                {invoice.service_duration && invoice.service_duration > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Duration:</span>
+                    <span className="font-medium">{invoice.service_duration} hours</span>
+                  </div>
+                )}
+                {invoice.square_meters && invoice.square_meters > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Area Size:</span>
+                    <span className="font-medium">{invoice.square_meters} sq meters</span>
+                  </div>
+                )}
                 {invoice.special_instructions && (
                   <div>
                     <span className="text-gray-600 block mb-1">Special Instructions:</span>
@@ -200,7 +206,7 @@ const InvoiceTemplate = ({ invoice }) => {
         </div>
       </div>
 
-      {/* Payment Information */}
+      {/* Payment Information - Only show if paid */}
       {invoice.status === 'paid' && invoice.payment_date && (
         <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg">
           <h3 className="text-lg font-semibold text-green-800 mb-2">✅ Payment Received</h3>
@@ -221,23 +227,21 @@ const InvoiceTemplate = ({ invoice }) => {
         </div>
       )}
 
-      {/* Payment Instructions */}
-      {invoice.status !== 'paid' && (
-        <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-yellow-800 mb-2">💳 Payment Instructions</h3>
-          <div className="text-sm text-yellow-700 space-y-2">
-            <p><strong>Payment Methods Accepted:</strong></p>
-            <ul className="list-disc list-inside ml-4 space-y-1">
-              <li>Cash payment upon service completion</li>
-              <li>Check payable to "Premier Prime Cleaning Services"</li>
-              <li>Credit/Debit Card (Visa, MasterCard, American Express)</li>
-              <li>Bank Transfer/ACH</li>
-            </ul>
-            <p className="mt-3"><strong>Payment Due:</strong> Net 30 days from invoice date</p>
-            <p><strong>Late Fee:</strong> 1.5% per month on overdue balances</p>
-          </div>
+      {/* Payment Instructions - Always show for unpaid invoices */}
+      <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">💳 Payment Instructions</h3>
+        <div className="text-sm text-blue-700 space-y-2">
+          <p><strong>Payment Methods Accepted:</strong></p>
+          <ul className="list-disc list-inside ml-4 space-y-1">
+            <li>Cash payment upon service completion</li>
+            <li>Check payable to "Premier Prime Cleaning Services"</li>
+            <li>Credit/Debit Card (Visa, MasterCard, American Express)</li>
+            <li>Bank Transfer/ACH</li>
+          </ul>
+          <p className="mt-3"><strong>Payment Due:</strong> {formatDate(invoice.due_date)}</p>
+          <p className="text-xs text-blue-600 mt-2">Late payments subject to 1.5% monthly service charge.</p>
         </div>
-      )}
+      </div>
 
       {/* Footer */}
       <div className="border-t border-gray-200 pt-6 text-center">
@@ -250,8 +254,8 @@ const InvoiceTemplate = ({ invoice }) => {
         </div>
         
         <div className="flex justify-center space-x-8 text-xs text-gray-500">
-          <span>📧 hello@premierprime.com</span>
-          <span>📞 (555) 123-CLEAN</span>
+          <span>📧 adaperez@premierprime.com</span>
+          <span>📞 (561) 452-3128</span>
           <span>🌐 www.premierprime.com</span>
         </div>
         

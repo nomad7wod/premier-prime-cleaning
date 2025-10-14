@@ -283,11 +283,13 @@ func SimpleGenerateInvoiceFromBooking(c *gin.Context) {
 	database.DB.QueryRow("SELECT COALESCE(MAX(CAST(SUBSTRING(invoice_number FROM 'PP-INV-[0-9]{4}-[0-9]{2}-([0-9]+)') AS INTEGER)), 0) FROM invoices WHERE invoice_number LIKE 'PP-INV-2025-%'").Scan(&maxNum)
 	invoiceNumber := fmt.Sprintf("PP-INV-2025-11-%03d", maxNum+1)
 
-	// Calculate tax (7% Florida sales tax)
-	subtotal := booking.TotalPrice
+	// Calculate tax - booking.TotalPrice is the final amount (tax-inclusive)
 	taxRate := 0.07
-	taxAmount := subtotal * taxRate
-	totalAmount := subtotal + taxAmount
+	totalAmount := booking.TotalPrice
+	// Calculate backwards: if total includes 7% tax, then total = subtotal * 1.07
+	// Therefore: subtotal = total / 1.07
+	subtotal := totalAmount / 1.07
+	taxAmount := totalAmount - subtotal
 
 	// Create invoice
 	insertQuery := `
@@ -320,6 +322,13 @@ func SimpleGenerateInvoiceFromBooking(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create invoice", "details": err.Error()})
 		return
+	}
+
+	// Update the booking to link the invoice
+	_, err = database.DB.Exec("UPDATE bookings SET invoice_id = $1 WHERE id = $2", invoiceID, bookingID)
+	if err != nil {
+		// Log the error but don't fail the request since the invoice was created
+		fmt.Printf("Warning: Failed to update booking with invoice_id: %v\n", err)
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -459,4 +468,147 @@ func SimpleGetInvoicesByDateRange(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"invoices": invoices})
+}
+
+// SimpleCreateCustomInvoice creates a custom invoice without requiring a booking
+func SimpleCreateCustomInvoice(c *gin.Context) {
+	var request struct {
+		CustomerName      string    `json:"customer_name" binding:"required"`
+		CustomerEmail     string    `json:"customer_email"`
+		CustomerPhone     string    `json:"customer_phone"`
+		BillingAddress    string    `json:"billing_address" binding:"required"`
+		BillingCity       string    `json:"billing_city" binding:"required"`
+		BillingState      string    `json:"billing_state" binding:"required"`
+		BillingZipCode    string    `json:"billing_zip_code" binding:"required"`
+		ServiceAddress    string    `json:"service_address"`
+		ServiceCity       string    `json:"service_city"`
+		ServiceState      string    `json:"service_state"`
+		ServiceZipCode    string    `json:"service_zip_code"`
+		ServiceName       string    `json:"service_name" binding:"required"`
+		ServiceDate       string    `json:"service_date" binding:"required"`
+		Subtotal          float64   `json:"subtotal" binding:"required,gt=0"`
+		TaxExempt         bool      `json:"tax_exempt"`
+		TaxExemptReason   string    `json:"tax_exempt_reason"`
+		Notes             string    `json:"notes"`
+		DueDays           int       `json:"due_days"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		// Log the actual error for debugging
+		fmt.Printf("Validation error: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		return
+	}
+
+	// Set defaults
+	if request.ServiceAddress == "" {
+		request.ServiceAddress = request.BillingAddress
+	}
+	if request.ServiceCity == "" {
+		request.ServiceCity = request.BillingCity
+	}
+	if request.ServiceState == "" {
+		request.ServiceState = request.BillingState
+	}
+	if request.ServiceZipCode == "" {
+		request.ServiceZipCode = request.BillingZipCode
+	}
+	if request.DueDays <= 0 {
+		request.DueDays = 30
+	}
+
+	// Parse service date
+	serviceDate, err := time.Parse("2006-01-02", request.ServiceDate)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid service date format. Use YYYY-MM-DD"})
+		return
+	}
+
+	// Generate invoice number
+	var maxNum int
+	database.DB.QueryRow("SELECT COALESCE(MAX(CAST(SUBSTRING(invoice_number FROM 'PP-INV-[0-9]{4}-[0-9]{2}-([0-9]+)') AS INTEGER)), 0) FROM invoices WHERE invoice_number LIKE 'PP-INV-2025-%'").Scan(&maxNum)
+	invoiceNumber := fmt.Sprintf("PP-INV-2025-11-%03d", maxNum+1)
+
+	// Calculate tax - the Subtotal field now contains the TOTAL (tax-inclusive)
+	taxRate := 0.07
+	var subtotal, taxAmount, totalAmount float64
+	
+	if request.TaxExempt {
+		// If tax exempt, the entered amount is both subtotal and total
+		totalAmount = request.Subtotal
+		subtotal = request.Subtotal
+		taxAmount = 0.0
+	} else {
+		// The entered amount includes tax, so we need to calculate backwards
+		// Total = Subtotal * 1.07
+		// Therefore: Subtotal = Total / 1.07
+		totalAmount = request.Subtotal
+		subtotal = totalAmount / 1.07
+		taxAmount = totalAmount - subtotal
+	}
+
+	// First create a dummy booking for custom invoices
+	bookingQuery := `
+		INSERT INTO bookings (
+			service_id, user_id, guest_name, guest_email, guest_phone,
+			scheduled_date, scheduled_time, address, square_meters,
+			total_price, status, special_instructions, is_custom_invoice
+		) VALUES (
+			1, NULL, $1, $2, $3, $4, '00:00', $5, 0,
+			$6, 'completed', $7, true
+		) RETURNING id
+	`
+
+	var bookingID int
+	err = database.DB.QueryRow(bookingQuery,
+		request.CustomerName, request.CustomerEmail, request.CustomerPhone,
+		serviceDate, request.ServiceAddress,
+		subtotal, "Custom invoice - "+request.ServiceName,
+	).Scan(&bookingID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create booking record", "details": err.Error()})
+		return
+	}
+
+	// Create invoice
+	insertQuery := `
+		INSERT INTO invoices (
+			booking_id, invoice_number, issue_date, due_date,
+			customer_name, customer_email, customer_phone,
+			billing_address, billing_city, billing_state, billing_zip_code, billing_country,
+			service_address, service_city, service_state, service_zip_code,
+			subtotal, tax_rate, tax_amount, total_amount,
+			status, florida_tax_id, tax_exempt, tax_exempt_reason, notes, terms
+		) VALUES (
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
+			$17, $18, $19, $20, $21, $22, $23, $24, $25, $26
+		) RETURNING id
+	`
+
+	now := time.Now()
+	dueDate := now.AddDate(0, 0, request.DueDays)
+	terms := fmt.Sprintf("Payment due within %d days of invoice date. Late payments subject to 1.5%% monthly service charge.", request.DueDays)
+
+	var invoiceID int
+	err = database.DB.QueryRow(insertQuery,
+		bookingID, invoiceNumber, now, dueDate,
+		request.CustomerName, request.CustomerEmail, request.CustomerPhone,
+		request.BillingAddress, request.BillingCity, request.BillingState, request.BillingZipCode, "United States",
+		request.ServiceAddress, request.ServiceCity, request.ServiceState, request.ServiceZipCode,
+		subtotal, taxRate, taxAmount, totalAmount,
+		"pending", "FL-59-123456789", request.TaxExempt, request.TaxExemptReason, request.Notes, terms,
+	).Scan(&invoiceID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create invoice", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Custom invoice created successfully",
+		"invoice_id": invoiceID,
+		"invoice_number": invoiceNumber,
+		"total_amount": totalAmount,
+	})
 }

@@ -125,6 +125,7 @@ func main() {
 			admin.GET("/invoices/:id", handlers.SimpleGetInvoice)
 			admin.POST("/invoices", handlers.CreateInvoice)
 			admin.POST("/invoices/from-booking/:booking_id", handlers.SimpleGenerateInvoiceFromBooking)
+			admin.POST("/invoices/custom", handlers.SimpleCreateCustomInvoice)
 			admin.PUT("/invoices/:id", handlers.UpdateInvoice)
 			admin.PUT("/invoices/:id/mark-paid", handlers.SimpleMarkAsPaid)
 			admin.DELETE("/invoices/:id", handlers.SimpleDeleteInvoice)
