@@ -20,17 +20,27 @@ A comprehensive web application for managing cleaning service reservations, buil
 - **Quote request system** - Get price estimates
 - **Contact message system** - Customer inquiries
 
-### 💰 NEW: Professional Invoicing & Florida Tax Compliance
+### 💰 Professional Invoicing & Florida Tax Compliance
 - **Automated Invoice Generation**: Professional invoices created automatically from bookings
+- **Custom Invoice Creation**: Create invoices for services outside the booking system
+  - Service dropdown with existing services or custom entry
+  - Optional email and phone fields for flexibility
+  - Tax-inclusive pricing (enter final amount, system calculates breakdown)
 - **Florida Tax Compliance**: 7% tax calculation (6% state + 1% discretionary) with proper reporting
 - **Billing Address Collection**: Separate service and billing addresses for accurate invoicing
 - **Payment Tracking**: Multiple payment methods (cash, check, credit card, bank transfer)
 - **Tax-Exempt Handling**: Support for tax-exempt customers with reason tracking
 - **Professional Invoice Format**: 
-  - Unique invoice numbers (PP-YYYY-NNNNN format)
+  - Unique invoice numbers (PP-INV-YYYY-MM-NNN format)
   - Complete company branding and Florida tax ID
   - Detailed service descriptions and line items
   - Payment terms and conditions
+  - Clean, customer-facing format (no internal status displayed)
+- **Invoice Management Features**:
+  - Prevent duplicate invoices with booking-invoice linking
+  - Filter bookings to show only those without existing invoices
+  - Real-time invoice status tracking (pending, paid, overdue)
+  - Mark invoices as paid with payment method and reference
 - **Accounting Features**:
   - Monthly revenue reports
   - Tax collection summaries
@@ -100,6 +110,11 @@ docker-compose up --build
 - 📊 **Admin Dashboard** - System overview and statistics
 - 📅 **Calendar Management** - Month/Week/Day booking views
 - 👥 **Booking Management** - View and manage all bookings
+- 💳 **Invoice Management** - Create, track, and manage invoices
+  - Create from bookings or manually
+  - Track payment status
+  - Generate professional invoices
+  - Filter by status (pending, paid, overdue)
 - 📧 **Quote Management** - Handle customer quote requests
 - 💬 **Message Management** - Customer inquiries and support
 - ❓ **FAQ Management** - Update frequently asked questions
@@ -133,6 +148,7 @@ SELECT * FROM contact_messages; # View contact messages
 - **users** - User accounts and admin users
 - **services** - Available cleaning services
 - **bookings** - All bookings (registered users + guests)
+- **invoices** - Professional invoices linked to bookings
 - **quotes** - Quote requests from potential customers
 - **contact_messages** - Customer inquiries and support requests
 - **faqs** - Frequently asked questions
@@ -221,6 +237,16 @@ cleaning-app/
 - `GET /api/admin/messages` - Get contact messages
 - `PUT /api/admin/messages/:id` - Update message status
 
+### Invoice Management
+- `GET /api/admin/invoices` - Get all invoices (with optional status filter)
+- `GET /api/admin/invoices/:id` - Get specific invoice details
+- `POST /api/admin/invoices/from-booking/:booking_id` - Create invoice from existing booking
+- `POST /api/admin/invoices/custom` - Create custom invoice (no booking required)
+- `PUT /api/admin/invoices/:id/mark-paid` - Mark invoice as paid
+- `DELETE /api/admin/invoices/:id` - Delete invoice
+- `GET /api/admin/invoices/date-range` - Get invoices by date range
+- `GET /api/admin/reports` - Get revenue and tax reports
+
 ### Public Features
 - `POST /api/contact` - Submit contact message (no auth)
 - `GET /api/faq` - Get frequently asked questions (no auth)
@@ -275,8 +301,9 @@ The application is containerized and ready for deployment with Docker. Use the p
 ## 📞 Support & Contact
 
 For development support or questions:
-- **Email:** hello@premierprime.com
-- **Phone:** (555) 123-CLEAN
+- **Email:** adaperez@premierprime.com
+- **Phone:** (561) 452-3128
+- **Website:** www.premierprime.com
 - **Hours:** Mon-Sat 8AM-6PM
 
 ## 🎯 Current Development Status
@@ -292,6 +319,8 @@ For development support or questions:
 - ✅ Modern, friendly UI design
 - ✅ Mobile responsive design
 - ✅ Professional invoicing system
+- ✅ Custom invoice generator with tax-inclusive pricing
+- ✅ Invoice-booking linking to prevent duplicates
 - ✅ Advanced booking management with status filters
 - ✅ Timezone-safe date handling
 - ✅ Recent bookings filter
