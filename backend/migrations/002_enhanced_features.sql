@@ -1,5 +1,4 @@
--- +goose Up
--- SQL in this section is executed when the migration is applied.
+-- Enhanced features migration
 
 -- Modify bookings table to support guest bookings
 ALTER TABLE bookings 
@@ -64,15 +63,3 @@ INSERT INTO faqs (question, answer, category, display_order) VALUES
 ('What if I need to reschedule my appointment?', 'You can reschedule your appointment up to 2 hours before the scheduled time. Contact us or use our online system to make changes.', 'booking', 2),
 ('Do you offer recurring cleaning services?', 'Yes! We offer weekly, bi-weekly, monthly, and custom recurring cleaning schedules with discounted rates.', 'general', 3),
 ('What is included in your cleaning service?', 'Our standard cleaning includes dusting, vacuuming, mopping, bathroom cleaning, kitchen cleaning, and trash removal. Deep cleaning includes additional services.', 'general', 4);
-
--- +goose Down
--- SQL in this section is executed when the migration is rolled back.
-DROP TABLE faqs;
-DROP TABLE contact_messages;
-DROP TABLE quotes;
-ALTER TABLE bookings 
-    DROP COLUMN is_guest_booking,
-    DROP COLUMN guest_phone,
-    DROP COLUMN guest_email,
-    DROP COLUMN guest_name,
-    ALTER COLUMN user_id SET NOT NULL;

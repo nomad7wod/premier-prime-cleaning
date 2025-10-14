@@ -1,5 +1,4 @@
--- +goose Up
--- SQL in this section is executed when the migration is applied.
+-- Initial schema for cleaning app
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -37,9 +36,3 @@ CREATE TABLE bookings (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
--- +goose Down
--- SQL in this section is executed when the migration is rolled back.
-DROP TABLE bookings;
-DROP TABLE services;
-DROP TABLE users;
