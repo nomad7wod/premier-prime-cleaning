@@ -113,12 +113,7 @@ Payment Information:
 - Payment Date: ${new Date(invoice.payment_date).toLocaleDateString()}
 - Payment Method: ${invoice.payment_method || 'Not specified'}
 - Reference: ${invoice.payment_reference || 'N/A'}
-` : `
-Payment Instructions:
-- Payment Methods: Cash, Check, Credit Card, Bank Transfer
-- Payment Terms: Net 30 days
-- Late Fee: 1.5% per month on overdue balances
-`}
+` : ''}
 
 Thank you for choosing Premier Prime! ✨
 Your satisfaction is our priority.

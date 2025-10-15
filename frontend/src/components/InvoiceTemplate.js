@@ -228,7 +228,7 @@ const InvoiceTemplate = ({ invoice }) => {
       )}
 
       {/* Payment Instructions - Always show for unpaid invoices */}
-      <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      {/* <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <h3 className="text-lg font-semibold text-blue-800 mb-2">💳 Payment Instructions</h3>
         <div className="text-sm text-blue-700 space-y-2">
           <p><strong>Payment Methods Accepted:</strong></p>
@@ -241,7 +241,7 @@ const InvoiceTemplate = ({ invoice }) => {
           <p className="mt-3"><strong>Payment Due:</strong> {formatDate(invoice.due_date)}</p>
           <p className="text-xs text-blue-600 mt-2">Late payments subject to 1.5% monthly service charge.</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Footer */}
       <div className="border-t border-gray-200 pt-6 text-center">
