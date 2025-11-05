@@ -19,6 +19,7 @@ const guestBookingSchema = z.object({
   billing_state: z.string().min(1, 'Billing state is required'),
   billing_zip_code: z.string().min(5, 'Valid zip code is required'),
   billing_country: z.string().min(1, 'Billing country is required'),
+  total_price: z.number().min(0, 'Total price must be greater than 0').optional(),
 });
 
 const GuestBookingPage = () => {
@@ -26,6 +27,7 @@ const GuestBookingPage = () => {
   const [estimate, setEstimate] = useState(null);
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const {
     register,
@@ -77,11 +79,18 @@ const GuestBookingPage = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await api.post('/guest/booking', data);
+      // Add estimated price to form data
+      const bookingData = {
+        ...data,
+        total_price: estimate || 0
+      };
+      const response = await api.post('/guest/booking', bookingData);
       setBooking(response.data.booking);
     } catch (error) {
       console.error('Failed to create booking:', error);
+      setError(error.response?.data?.error || 'Failed to create booking. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -195,6 +204,16 @@ const GuestBookingPage = () => {
           </div>
 
           <div className="p-8">
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-xl">
+                <div className="flex items-center">
+                  <svg className="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-red-700 font-medium">{error}</p>
+                </div>
+              </div>
+            )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
                 <label className="block text-lg font-semibold text-gray-800 mb-3">🧹 Choose Your Service</label>

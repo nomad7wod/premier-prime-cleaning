@@ -21,7 +21,10 @@ func CreateGuestBooking(c *gin.Context) {
 	bookingService := services.NewBookingService()
 	booking, err := bookingService.CreateGuestBooking(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create booking"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create booking",
+			"details": err.Error(),
+		})
 		return
 	}
 
@@ -66,7 +69,10 @@ func RequestQuote(c *gin.Context) {
 	quoteService := services.NewQuoteService()
 	quote, err := quoteService.CreateQuote(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create quote request"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create quote request",
+			"details": err.Error(),
+		})
 		return
 	}
 
@@ -94,7 +100,10 @@ func GetQuoteEstimate(c *gin.Context) {
 	quoteService := services.NewQuoteService()
 	estimate, err := quoteService.GetInstantEstimate(serviceID, squareMeters)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to calculate estimate"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to calculate estimate",
+			"details": err.Error(),
+		})
 		return
 	}
 
@@ -115,7 +124,10 @@ func SubmitContactMessage(c *gin.Context) {
 	contactService := services.NewContactService()
 	message, err := contactService.CreateContactMessage(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to submit message"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to submit message",
+			"details": err.Error(),
+		})
 		return
 	}
 
