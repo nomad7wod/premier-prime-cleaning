@@ -173,9 +173,9 @@ const AdminCalendar = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending': return 'bg-orange-200 text-orange-800';
-      case 'confirmed': return 'bg-green-200 text-green-800';
-      case 'in_progress': return 'bg-blue-200 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-900';
+      case 'confirmed': return 'bg-brand-200 text-brand-800';
+      case 'in_progress': return 'bg-brand-200 text-brand-800';
+      case 'completed': return 'bg-brand-100 text-brand-900';
       case 'cancelled': return 'bg-red-200 text-red-800';
       default: return 'bg-gray-200 text-gray-800';
     }
@@ -271,15 +271,15 @@ const AdminCalendar = () => {
             key={index}
             className={`
               min-h-[120px] p-1 border border-gray-200 cursor-pointer hover:bg-gray-50
-              ${isSelected ? 'bg-blue-50 ring-2 ring-blue-500' : ''}
-              ${isToday ? 'bg-blue-100' : ''}
+              ${isSelected ? 'bg-brand-50 ring-2 ring-brand-500' : ''}
+              ${isToday ? 'bg-brand-100' : ''}
               ${!date ? 'bg-gray-50' : ''}
             `}
             onClick={() => handleDateClick(date)}
           >
             {date && (
               <>
-                <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-600' : 'text-gray-900'}`}>
+                <div className={`text-sm font-medium mb-1 ${isToday ? 'text-brand-600' : 'text-gray-900'}`}>
                   {date.getDate()}
                 </div>
                 {dayEvents.length > 0 && (
@@ -347,7 +347,7 @@ const AdminCalendar = () => {
         <div key={dayIndex} className="col-span-1">
           {/* Day header */}
           <div className={`h-12 border-b border-gray-200 p-2 text-center ${
-            date.toDateString() === new Date().toDateString() ? 'bg-blue-100 text-blue-600 font-semibold' : ''
+            date.toDateString() === new Date().toDateString() ? 'bg-brand-100 text-brand-600 font-semibold' : ''
           }`}>
             <div className="text-xs text-gray-500">
               {date.toLocaleDateString('en-US', { weekday: 'short' })}
@@ -629,7 +629,7 @@ const AdminCalendar = () => {
                                     <div className="text-sm text-gray-600">
                                       {booking.address}
                                     </div>
-                                    <div className="text-sm font-medium text-green-600">
+                                    <div className="text-sm font-medium text-brand-600">
                                       ${booking.total_price}
                                     </div>
                                   </div>

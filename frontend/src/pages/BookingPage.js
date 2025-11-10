@@ -66,22 +66,22 @@ const BookingPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-lg text-blue-700">Loading services...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500 mx-auto"></div>
+          <p className="mt-4 text-lg text-brand-700">Loading services...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-zinc-100">
+          <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-8 py-6">
             <h1 className="text-3xl font-bold text-white">✨ Book Your Cleaning Service</h1>
-            <p className="text-blue-100 mt-2">Let us make your space sparkle and shine!</p>
+            <p className="text-brand-100 mt-2">Let us make your space sparkle and shine!</p>
           </div>
 
           <div className="p-8">
@@ -112,7 +112,7 @@ const BookingPage = () => {
                   <option value="">🤔 Choose your perfect service</option>
                   {services.map((service) => (
                     <option key={service.id} value={service.id}>
-                      {service.name} - ${service.base_price}/hour ⏰
+                      {service.name}
                     </option>
                   ))}
                 </select>
@@ -177,7 +177,7 @@ const BookingPage = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+              <div className="bg-gradient-to-r from-green-50 to-brand-50 p-6 rounded-xl border border-green-200">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">🏠 Location Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">

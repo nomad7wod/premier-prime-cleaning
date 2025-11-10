@@ -646,7 +646,22 @@ const AdminInvoices = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    // Parse date carefully to avoid timezone conversion issues
+    if (dateString.includes('T')) {
+      // Extract just the date part: "2025-10-10T00:00:00Z" -> "2025-10-10"
+      const datePart = dateString.split('T')[0];
+      const [year, month, day] = datePart.split('-');
+      const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      return localDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+    // If it's already just a date string
+    const [year, month, day] = dateString.split('-');
+    const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    return localDate.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

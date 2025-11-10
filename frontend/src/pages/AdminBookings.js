@@ -162,10 +162,10 @@ const AdminBookings = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="admin-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Manage Bookings</h1>
-        <p className="mt-2 text-gray-600">View and manage all service bookings</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Manage Bookings</h1>
+        <p className="mt-2 text-xl text-gray-600">View and manage all service bookings</p>
         
         {/* Filter Controls */}
         <div className="mt-4 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">

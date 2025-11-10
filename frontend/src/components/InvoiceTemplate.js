@@ -54,9 +54,9 @@ const InvoiceTemplate = ({ invoice }) => {
             <h1 className="text-4xl font-bold text-blue-600 mb-2">✨ PREMIER PRIME</h1>
             <p className="text-lg text-gray-600">Professional Cleaning Services</p>
             <div className="mt-4 text-sm text-gray-600">
-              <p>📧 adaperez@premierprime.com</p>
+              <p>📧 adaperez@premierprime.org</p>
               <p>📞 (561) 452-3128</p>
-              <p>🌐 www.premierprime.com</p>
+              <p>🌐 www.premierprime.org</p>
               <p>🆔 Florida Tax ID: FL-123456789</p>
             </div>
           </div>
@@ -254,9 +254,9 @@ const InvoiceTemplate = ({ invoice }) => {
         </div>
         
         <div className="flex justify-center space-x-8 text-xs text-gray-500">
-          <span>📧 adaperez@premierprime.com</span>
+          <span>📧 adaperez@premierprime.org</span>
           <span>📞 (561) 452-3128</span>
-          <span>🌐 www.premierprime.com</span>
+          <span>🌐 www.premierprime.org</span>
         </div>
         
         <div className="mt-4 text-xs text-gray-400">

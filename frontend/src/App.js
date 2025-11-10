@@ -13,8 +13,21 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminBookings from './pages/AdminBookings';
 import AdminCalendar from './pages/AdminCalendar';
 import AdminInvoices from './pages/AdminInvoices';
+import AdminQuotes from './pages/AdminQuotes';
 import InvoiceDetailPage from './pages/InvoiceDetailPage';
 import AdminReports from './pages/AdminReports';
+
+// Service Pages
+import ResidentialCleaningPage from './pages/services/ResidentialCleaningPage';
+import CommercialCleaningPage from './pages/services/CommercialCleaningPage';
+import AirbnbCleaningPage from './pages/services/AirbnbCleaningPage';
+import CustomCleaningPage from './pages/services/CustomCleaningPage';
+import PostRenovationCleaningPage from './pages/services/PostRenovationCleaningPage';
+import MoveInOutCleaningPage from './pages/services/MoveInOutCleaningPage';
+
+// Info Pages
+import AboutPage from './pages/AboutPage';
+import AreasPage from './pages/AreasPage';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -37,6 +50,19 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/guest-booking" element={<GuestBookingPage />} />
             <Route path="/quote" element={<QuotePage />} />
+            
+            {/* Service Pages */}
+            <Route path="/services/residential" element={<ResidentialCleaningPage />} />
+            <Route path="/services/commercial" element={<CommercialCleaningPage />} />
+            <Route path="/services/airbnb" element={<AirbnbCleaningPage />} />
+            <Route path="/services/custom" element={<CustomCleaningPage />} />
+            <Route path="/services/post-renovation" element={<PostRenovationCleaningPage />} />
+            <Route path="/services/move-in-out" element={<MoveInOutCleaningPage />} />
+            
+            {/* Info Pages */}
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/areas" element={<AreasPage />} />
+            
             <Route 
               path="/profile" 
               element={
@@ -82,6 +108,14 @@ function App() {
               element={
                 <AdminRoute>
                   <AdminInvoices />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/admin/quotes" 
+              element={
+                <AdminRoute>
+                  <AdminQuotes />
                 </AdminRoute>
               } 
             />

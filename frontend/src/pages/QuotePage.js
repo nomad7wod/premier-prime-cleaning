@@ -98,7 +98,7 @@ const QuotePage = () => {
 
           {/* Quote Details Card */}
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
-            <div className="bg-gradient-to-r from-green-600 to-blue-600 px-6 py-4">
+            <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-6 py-4">
               <h2 className="text-2xl font-bold text-white">✨ Your Quote Details</h2>
             </div>
             
@@ -106,8 +106,8 @@ const QuotePage = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <div className="bg-blue-100 rounded-full p-2">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="bg-brand-100 rounded-full p-2">
+                      <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                     </div>
@@ -120,12 +120,12 @@ const QuotePage = () => {
                   <div className="flex items-center space-x-3">
                     <div className="bg-green-100 rounded-full p-2">
                       <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Estimated Price</p>
-                      <p className="text-2xl font-bold text-green-600">${quote.estimated_price.toFixed(2)}</p>
+                      <p className="text-sm text-gray-500">Quote Status</p>
+                      <p className="text-2xl font-bold text-green-600 capitalize">{quote.status}</p>
                     </div>
                   </div>
 
@@ -170,19 +170,19 @@ const QuotePage = () => {
               </div>
 
               {/* Next Steps */}
-              <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                <h3 className="text-lg font-semibold text-blue-900 mb-3">📋 What happens next?</h3>
-                <div className="space-y-2 text-sm text-blue-800">
+              <div className="mt-8 p-4 bg-brand-50 rounded-xl border border-brand-200">
+                <h3 className="text-lg font-semibold text-brand-900 mb-3">📋 What happens next?</h3>
+                <div className="space-y-2 text-sm text-brand-800">
                   <div className="flex items-center space-x-2">
-                    <span className="bg-blue-200 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</span>
+                    <span className="bg-brand-200 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</span>
                     <span>Our team will review your quote request within 2 hours</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="bg-blue-200 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</span>
-                    <span>We'll send you a detailed quote with exact pricing via email</span>
+                    <span className="bg-brand-200 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</span>
+                    <span>We'll send you a detailed quote via email</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="bg-blue-200 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">3</span>
+                    <span className="bg-brand-200 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">3</span>
                     <span>You can book directly from the quote or contact us for questions</span>
                   </div>
                 </div>
@@ -192,7 +192,7 @@ const QuotePage = () => {
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => window.location.href = '/guest-booking'}
-                  className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="flex-1 bg-brand-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   🚀 Book Service Now
                 </button>
@@ -211,12 +211,12 @@ const QuotePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            💰 Get Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-600">Free Quote</span>
+            💰 Get Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-700">Free Quote</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Get an instant estimate and request a detailed quote for your cleaning needs. 
@@ -227,15 +227,15 @@ const QuotePage = () => {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4">
-            <div className={`flex items-center space-x-2 ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
-              <div className={`rounded-full w-8 h-8 flex items-center justify-center ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
+            <div className={`flex items-center space-x-2 ${step >= 1 ? 'text-brand-600' : 'text-gray-400'}`}>
+              <div className={`rounded-full w-8 h-8 flex items-center justify-center ${step >= 1 ? 'bg-brand-600 text-white' : 'bg-gray-200'}`}>
                 1
               </div>
               <span className="hidden sm:block font-medium">Service Details</span>
             </div>
             <div className="w-8 h-1 bg-gray-200 rounded"></div>
-            <div className={`flex items-center space-x-2 ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
-              <div className={`rounded-full w-8 h-8 flex items-center justify-center ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
+            <div className={`flex items-center space-x-2 ${step >= 2 ? 'text-brand-600' : 'text-gray-400'}`}>
+              <div className={`rounded-full w-8 h-8 flex items-center justify-center ${step >= 2 ? 'bg-brand-600 text-white' : 'bg-gray-200'}`}>
                 2
               </div>
               <span className="hidden sm:block font-medium">Contact Info</span>
@@ -252,7 +252,7 @@ const QuotePage = () => {
 
         {/* Main Form Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-orange-600 px-6 py-4">
+          <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-6 py-4">
             <h2 className="text-2xl font-bold text-white">🏠 Tell us about your cleaning needs</h2>
           </div>
 
@@ -261,12 +261,12 @@ const QuotePage = () => {
             <div className="bg-gradient-to-r from-green-50 to-blue-50 border-b border-green-200 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-green-800">⚡ Instant Estimate</h3>
-                  <p className="text-sm text-green-600">*Final price may vary based on specific requirements</p>
+                  <h3 className="text-lg font-bold text-green-800">⚡ Quote Request Received</h3>
+                  <p className="text-sm text-green-600">Our team will review and send you a personalized quote</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl font-bold text-green-600">${instantEstimate.toFixed(2)}</p>
-                  <p className="text-sm text-green-600">Estimated cost</p>
+                  <p className="text-3xl font-bold text-green-600">✓</p>
+                  <p className="text-sm text-green-600">Under Review</p>
                 </div>
               </div>
             </div>
@@ -296,7 +296,7 @@ const QuotePage = () => {
                   <option value="">Select a cleaning service...</option>
                   {services.map((service) => (
                     <option key={service.id} value={service.id}>
-                      {service.name} - ${service.base_price} ({service.duration_hours} hours)
+                      {service.name} ({service.duration_hours} hours)
                     </option>
                   ))}
                 </select>
@@ -437,7 +437,7 @@ const QuotePage = () => {
               <button
                 type="submit"
                 disabled={isSubmitting || loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-orange-700 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="w-full bg-brand-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {isSubmitting || loading ? (
                   <div className="flex items-center justify-center">

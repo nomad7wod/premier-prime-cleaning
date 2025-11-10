@@ -70,6 +70,45 @@ git push -u origin main
 
 ---
 
+### 🏢 Option 4: AWS (Full Control)
+**Cost:** $40-100/month | **Difficulty:** ⭐⭐⭐⭐ | **Time:** 1-2 hours
+
+**Architecture:**
+- **RDS PostgreSQL** for database
+- **EC2** or **ECS** for backend
+- **S3 + CloudFront** for frontend
+- **Route 53** for DNS
+
+**Quick Start:**
+```bash
+# 1. Create RDS PostgreSQL Database
+# - Go to AWS Console → RDS → Create Database
+# - Choose PostgreSQL 15
+# - Select instance size (db.t3.micro for start)
+# - Set master username and password
+# - Enable public access (for initial setup)
+# - Note the endpoint URL
+
+# 2. Seed the Database
+# From your local machine with PostgreSQL client installed:
+.\seed-database.ps1 -Host "your-rds-endpoint.amazonaws.com" -Database "cleaning_app" -User "postgres"
+
+# Or use the bash version:
+./seed-database.sh your-rds-endpoint.amazonaws.com cleaning_app postgres
+
+# 3. Deploy Backend to EC2 or ECS (see AWS_DEPLOYMENT.md for details)
+
+# 4. Deploy Frontend to S3 + CloudFront
+cd frontend
+npm run build
+aws s3 sync build/ s3://your-bucket-name/
+aws cloudfront create-invalidation --distribution-id YOUR_DIST_ID --paths "/*"
+```
+
+**See [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md) for complete AWS deployment guide**
+
+---
+
 ## 🔧 Quick Setup Commands
 
 Run this from the `cleaning-app` directory:

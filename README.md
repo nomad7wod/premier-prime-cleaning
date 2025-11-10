@@ -303,7 +303,7 @@ The application is containerized and ready for deployment with Docker. Use the p
 For development support or questions:
 - **Email:** adaperez@premierprime.com
 - **Phone:** (561) 452-3128
-- **Website:** www.premierprime.com
+- **Website:** www.premierprime.org
 - **Hours:** Mon-Sat 8AM-6PM
 
 ## 🎯 Current Development Status

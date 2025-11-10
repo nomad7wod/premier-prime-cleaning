@@ -11,3 +11,49 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #f9fafb;
 }
+
+/* Increase font sizes for admin pages */
+.admin-page table {
+  font-size: 1rem !important;
+}
+
+.admin-page th {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+}
+
+.admin-page td {
+  font-size: 1rem !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.admin-page .text-xs {
+  font-size: 0.875rem !important;
+}
+
+.admin-page .text-sm {
+  font-size: 1rem !important;
+}
+
+.admin-page h1 {
+  font-size: 2.5rem !important;
+}
+
+.admin-page h2 {
+  font-size: 2rem !important;
+}
+
+.admin-page h3 {
+  font-size: 1.5rem !important;
+}
+
+.admin-page button,
+.admin-page select,
+.admin-page input {
+  font-size: 1rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.admin-page label {
+  font-size: 1rem !important;
+}

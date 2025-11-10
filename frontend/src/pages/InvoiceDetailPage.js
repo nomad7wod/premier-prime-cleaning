@@ -119,9 +119,9 @@ Thank you for choosing Premier Prime! ✨
 Your satisfaction is our priority.
 
 Contact Information:
-📧 adaperez@premierprime.com
+📧 adaperez@premierprime.org
 📞 (561) 452-3128
-🌐 www.premierprime.com
+🌐 www.premierprime.org
 
 Licensed & Insured • Florida License #123456
     `;

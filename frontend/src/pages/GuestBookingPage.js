@@ -98,10 +98,10 @@ const GuestBookingPage = () => {
 
   if (booking) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-12">
+      <div className="min-h-screen bg-white py-12">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-8 py-6">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-zinc-100">
+            <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-8 py-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <svg className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -129,8 +129,8 @@ const GuestBookingPage = () => {
                     <p className="text-lg font-bold text-blue-600">#{booking.id}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Total Price:</span>
-                    <p className="text-lg font-bold text-green-600">${booking.total_price?.toFixed(2)}</p>
+                    <span className="font-medium text-gray-700">Status:</span>
+                    <p className="text-lg font-bold text-green-600 capitalize">{booking.status}</p>
                   </div>
                   <div>
                     <span className="font-medium text-gray-700">Date:</span>
@@ -195,12 +195,12 @@ const GuestBookingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-orange-500 to-yellow-500 px-8 py-6">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-zinc-100">
+          <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-8 py-6">
             <h1 className="text-3xl font-bold text-white">🚀 Quick Book - No Account Needed!</h1>
-            <p className="text-orange-100 mt-2">Get your space cleaned in just 2 minutes. Super easy!</p>
+            <p className="text-brand-100 mt-2">Get your space cleaned in just 2 minutes. Super easy!</p>
           </div>
 
           <div className="p-8">
@@ -224,14 +224,14 @@ const GuestBookingPage = () => {
                   <option value="">✨ Select the perfect service for you</option>
                   {services.map((service) => (
                     <option key={service.id} value={service.id}>
-                      {service.name} - ${service.base_price} ({service.duration_hours}h) ⏰
+                      {service.name}
                     </option>
                   ))}
                 </select>
                 {errors.service_id && <p className="mt-2 text-sm text-red-600">⚠️ {errors.service_id.message}</p>}
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+              <div className="bg-gradient-to-r from-green-50 to-brand-50 p-6 rounded-xl border border-green-200">
                 <label className="block text-lg font-semibold text-gray-800 mb-3">
                   📏 Space Size (Square Meters) 
                   {estimate && <span className="text-green-600 ml-2">💰 Estimated: ${estimate.toFixed(2)}</span>}
