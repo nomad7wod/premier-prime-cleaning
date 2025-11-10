@@ -3,27 +3,32 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$Host,
+    [string]$DbHost,
     
     [Parameter(Mandatory=$true)]
     [string]$Database,
     
     [Parameter(Mandatory=$true)]
-    [string]$User
+    [string]$User,
+    
+    [Parameter(Mandatory=$false)]
+    [string]$Password
 )
 
 Write-Host "Premier Prime Cleaning - Database Seeding Script" -ForegroundColor Green
 Write-Host "==================================================" -ForegroundColor Green
-Write-Host "Host: $Host"
+Write-Host "Host: $DbHost"
 Write-Host "Database: $Database"
 Write-Host "User: $User"
 Write-Host "==================================================" -ForegroundColor Green
 Write-Host ""
 
-# Ask for password securely
-$SecurePassword = Read-Host "Enter database password" -AsSecureString
-$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword)
-$Password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+# Ask for password securely if not provided
+if ([string]::IsNullOrEmpty($Password)) {
+    $SecurePassword = Read-Host "Enter database password" -AsSecureString
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword)
+    $Password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+}
 
 # Set environment variable for psql
 $env:PGPASSWORD = $Password
@@ -31,7 +36,7 @@ $env:PGPASSWORD = $Password
 # Test connection
 Write-Host "Testing database connection..." -ForegroundColor Yellow
 try {
-    $testResult = & psql -h $Host -U $User -d postgres -c "\q" 2>&1
+    $testResult = & psql -h $DbHost -U $User -d postgres -c "\q" 2>&1
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✓ Connection successful" -ForegroundColor Green
     } else {
@@ -46,10 +51,10 @@ try {
 
 # Check if database exists
 Write-Host "Checking if database exists..." -ForegroundColor Yellow
-$dbExists = & psql -h $Host -U $User -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$Database'" 2>&1
+$dbExists = & psql -h $DbHost -U $User -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$Database'" 2>&1
 if ($dbExists -ne "1") {
     Write-Host "Database doesn't exist. Creating..." -ForegroundColor Yellow
-    & psql -h $Host -U $User -d postgres -c "CREATE DATABASE $Database;" | Out-Null
+    & psql -h $DbHost -U $User -d postgres -c "CREATE DATABASE $Database;" | Out-Null
     Write-Host "✓ Database created" -ForegroundColor Green
 } else {
     Write-Host "✓ Database exists" -ForegroundColor Green
@@ -69,7 +74,7 @@ foreach ($migration in $migrations) {
     $filename = $migration.Name
     Write-Host "  Running $filename..." -ForegroundColor Yellow
     
-    $result = & psql -h $Host -U $User -d $Database -f $migration.FullName 2>&1
+    $result = & psql -h $DbHost -U $User -d $Database -f $migration.FullName 2>&1
     if ($LASTEXITCODE -eq 0) {
         Write-Host "  ✓ $filename completed" -ForegroundColor Green
     } else {
@@ -82,17 +87,17 @@ Write-Host ""
 Write-Host "Verifying seed data..." -ForegroundColor Yellow
 
 # Check admin user
-$adminCount = & psql -h $Host -U $User -d $Database -tAc "SELECT COUNT(*) FROM users WHERE role='admin';" 2>&1
+$adminCount = & psql -h $DbHost -U $User -d $Database -tAc "SELECT COUNT(*) FROM users WHERE role='admin';" 2>&1
 Write-Host "  Admin users: $adminCount"
 if ([int]$adminCount -gt 0) {
     Write-Host "  ✓ Admin user exists" -ForegroundColor Green
-    & psql -h $Host -U $User -d $Database -c "SELECT email, first_name, last_name, role FROM users WHERE role='admin';"
+    & psql -h $DbHost -U $User -d $Database -c "SELECT email, first_name, last_name, role FROM users WHERE role='admin';"
 } else {
     Write-Host "  ✗ No admin user found" -ForegroundColor Red
 }
 
 # Check services
-$serviceCount = & psql -h $Host -U $User -d $Database -tAc "SELECT COUNT(*) FROM services;" 2>&1
+$serviceCount = & psql -h $DbHost -U $User -d $Database -tAc "SELECT COUNT(*) FROM services;" 2>&1
 Write-Host ""
 Write-Host "  Services: $serviceCount"
 if ([int]$serviceCount -gt 0) {
