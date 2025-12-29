@@ -57,7 +57,7 @@ const InvoiceTemplate = ({ invoice }) => {
               <p>📧 adaperez@premierprime.org</p>
               <p>📞 (561) 452-3128</p>
               <p>🌐 www.premierprime.org</p>
-              <p>🆔 Florida Tax ID: FL-123456789</p>
+              <p>🆔 Florida Tax ID: 92-396658</p>
             </div>
           </div>
           <div className="text-right">
@@ -88,15 +88,21 @@ const InvoiceTemplate = ({ invoice }) => {
 
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-3">🏠 Service Address</h3>
-          <div className="text-sm text-gray-700 whitespace-pre-line">
-            {invoice.service_address}
+          <div className="text-sm text-gray-700">
+            <p>{invoice.service_address}</p>
+            {invoice.service_city && invoice.service_state && invoice.service_zip_code && (
+              <p>{invoice.service_city}, {invoice.service_state} {invoice.service_zip_code}</p>
+            )}
           </div>
         </div>
 
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-3">💳 Bill To</h3>
-          <div className="text-sm text-gray-700 whitespace-pre-line">
-            {invoice.billing_address}
+          <div className="text-sm text-gray-700">
+            <p>{invoice.billing_address}</p>
+            {invoice.billing_city && invoice.billing_state && invoice.billing_zip_code && (
+              <p>{invoice.billing_city}, {invoice.billing_state} {invoice.billing_zip_code}</p>
+            )}
           </div>
         </div>
       </div>
@@ -260,7 +266,7 @@ const InvoiceTemplate = ({ invoice }) => {
         </div>
         
         <div className="mt-4 text-xs text-gray-400">
-          <p>Premier Prime Cleaning Services • Licensed & Insured • Florida License #123456</p>
+          <p>Premier Prime Cleaning Services • Licensed & Insured</p>
           <p>This invoice was generated electronically and is valid without signature.</p>
         </div>
       </div>

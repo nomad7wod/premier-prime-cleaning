@@ -31,7 +31,8 @@ func SimpleGetAllInvoices(c *gin.Context) {
 		SELECT i.id, i.booking_id, i.invoice_number, i.issue_date, i.due_date,
 		       i.customer_name, i.customer_email, COALESCE(i.customer_phone, '') as customer_phone,
 		       i.billing_address, i.billing_city, i.billing_state, i.billing_zip_code,
-		       i.service_address, i.subtotal, i.tax_amount, i.total_amount,
+		       i.service_address, i.service_city, i.service_state, i.service_zip_code,
+		       i.subtotal, i.tax_amount, i.total_amount,
 		       i.status, COALESCE(i.payment_method, '') as payment_method, i.payment_date, 
 		       COALESCE(i.payment_reference, '') as payment_reference,
 		       i.created_at, b.scheduled_date as service_date, s.name as service_name
@@ -86,7 +87,8 @@ func SimpleGetAllInvoices(c *gin.Context) {
 		var invoice map[string]interface{} = make(map[string]interface{})
 		var id, bookingID int
 		var invoiceNumber, customerName, customerEmail, customerPhone string
-		var billingAddress, billingCity, billingState, billingZipCode, serviceAddress string
+		var billingAddress, billingCity, billingState, billingZipCode string
+		var serviceAddress, serviceCity, serviceState, serviceZipCode string
 		var subtotal, taxAmount, totalAmount float64
 		var status, paymentMethod, paymentReference, serviceName string
 		var issueDate, dueDate, createdAt, serviceDate time.Time
@@ -96,7 +98,8 @@ func SimpleGetAllInvoices(c *gin.Context) {
 			&id, &bookingID, &invoiceNumber, &issueDate, &dueDate,
 			&customerName, &customerEmail, &customerPhone,
 			&billingAddress, &billingCity, &billingState, &billingZipCode,
-			&serviceAddress, &subtotal, &taxAmount, &totalAmount,
+			&serviceAddress, &serviceCity, &serviceState, &serviceZipCode,
+			&subtotal, &taxAmount, &totalAmount,
 			&status, &paymentMethod, &paymentDate, &paymentReference,
 			&createdAt, &serviceDate, &serviceName,
 		)
@@ -118,6 +121,9 @@ func SimpleGetAllInvoices(c *gin.Context) {
 		invoice["billing_state"] = billingState
 		invoice["billing_zip_code"] = billingZipCode
 		invoice["service_address"] = serviceAddress
+		invoice["service_city"] = serviceCity
+		invoice["service_state"] = serviceState
+		invoice["service_zip_code"] = serviceZipCode
 		invoice["subtotal"] = subtotal
 		invoice["tax_amount"] = taxAmount
 		invoice["total_amount"] = totalAmount
@@ -156,7 +162,8 @@ func SimpleGetInvoice(c *gin.Context) {
 		SELECT i.id, i.invoice_number, i.issue_date, i.due_date,
 		       i.customer_name, i.customer_email, COALESCE(i.customer_phone, '') as customer_phone,
 		       i.billing_address, i.billing_city, i.billing_state, i.billing_zip_code,
-		       i.service_address, i.subtotal, i.tax_amount, i.total_amount,
+		       i.service_address, i.service_city, i.service_state, i.service_zip_code,
+		       i.subtotal, i.tax_amount, i.total_amount,
 		       i.status, COALESCE(i.payment_method, '') as payment_method, i.payment_date, 
 		       COALESCE(i.payment_reference, '') as payment_reference,
 		       i.created_at, b.scheduled_date as service_date, s.name as service_name,
@@ -169,7 +176,8 @@ func SimpleGetInvoice(c *gin.Context) {
 
 	var invoice map[string]interface{} = make(map[string]interface{})
 	var invoiceNumber, customerName, customerEmail, customerPhone string
-	var billingAddress, billingCity, billingState, billingZipCode, serviceAddress string
+	var billingAddress, billingCity, billingState, billingZipCode string
+	var serviceAddress, serviceCity, serviceState, serviceZipCode string
 	var subtotal, taxAmount, totalAmount float64
 	var status, paymentMethod, paymentReference, serviceName string
 	var issueDate, dueDate, createdAt, serviceDate time.Time
@@ -180,7 +188,8 @@ func SimpleGetInvoice(c *gin.Context) {
 		&id, &invoiceNumber, &issueDate, &dueDate,
 		&customerName, &customerEmail, &customerPhone,
 		&billingAddress, &billingCity, &billingState, &billingZipCode,
-		&serviceAddress, &subtotal, &taxAmount, &totalAmount,
+		&serviceAddress, &serviceCity, &serviceState, &serviceZipCode,
+		&subtotal, &taxAmount, &totalAmount,
 		&status, &paymentMethod, &paymentDate, &paymentReference,
 		&createdAt, &serviceDate, &serviceName, &notes, &terms,
 	)
@@ -206,6 +215,9 @@ func SimpleGetInvoice(c *gin.Context) {
 	invoice["billing_state"] = billingState
 	invoice["billing_zip_code"] = billingZipCode
 	invoice["service_address"] = serviceAddress
+	invoice["service_city"] = serviceCity
+	invoice["service_state"] = serviceState
+	invoice["service_zip_code"] = serviceZipCode
 	invoice["subtotal"] = subtotal
 	invoice["tax_amount"] = taxAmount
 	invoice["total_amount"] = totalAmount
