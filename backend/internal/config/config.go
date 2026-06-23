@@ -13,6 +13,7 @@ type Config struct {
 	DBUser     string `mapstructure:"DB_USER"`
 	DBPassword string `mapstructure:"DB_PASSWORD"`
 	DBName     string `mapstructure:"DB_NAME"`
+	DBSSLMode  string `mapstructure:"DB_SSL_MODE"`
 	JWTSecret  string `mapstructure:"JWT_SECRET"`
 	JWTExpiry  string `mapstructure:"JWT_EXPIRY"`
 }
@@ -25,6 +26,7 @@ func LoadConfig() (config Config, err error) {
 	config.DBUser = "postgres" 
 	config.DBPassword = "password"
 	config.DBName = "cleaning_app"
+	config.DBSSLMode = "require"
 	config.JWTSecret = "supersecretkeyfordevelopment"
 	config.JWTExpiry = "24h"
 	
@@ -49,6 +51,9 @@ func LoadConfig() (config Config, err error) {
 	if dbName := viper.GetString("DB_NAME"); dbName != "" {
 		config.DBName = dbName
 	}
+	if sslMode := viper.GetString("DB_SSL_MODE"); sslMode != "" {
+		config.DBSSLMode = sslMode
+	}
 	if secret := viper.GetString("JWT_SECRET"); secret != "" {
 		config.JWTSecret = secret
 	}
@@ -60,6 +65,6 @@ func LoadConfig() (config Config, err error) {
 }
 
 func GetDSN(config Config) string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName)
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName, config.DBSSLMode)
 }

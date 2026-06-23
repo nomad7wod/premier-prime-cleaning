@@ -15,6 +15,7 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=password
       - DB_NAME=cleaning_app
+      - DB_SSL_MODE=disable
       - JWT_SECRET=supersecretkeyfordevelopment
       - JWT_EXPIRY=24h
       - DATABASE_URL=postgres://postgres:password@postgres:5432/cleaning_app?sslmode=disable
