@@ -17,10 +17,15 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-white text-zinc-900">
       {/* Announcement Bar */}
-      <div className="w-full bg-brand-600 text-white">
+      <div className="w-full bg-brand-700 text-white">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between text-base sm:text-lg">
-          <p className="font-medium">Serving Florida & surrounding areas — 7 days a week</p>
-          <a href="tel:+15614523128" className="underline font-semibold">(561) 452-3128</a>
+          <p className="font-medium">Serving Jupiter, Palm Beach Gardens, Tequesta & surrounding areas</p>
+          <a href="tel:+15614523128" className="flex items-center gap-2 font-semibold hover:text-gold-300">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            (561) 452-3128
+          </a>
         </div>
       </div>
 
@@ -28,12 +33,16 @@ const Layout = ({ children }) => {
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-zinc-100">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-brand-600 flex items-center justify-center text-white text-2xl" aria-hidden>
-              ✨
+            <div className="h-12 w-12 rounded-full bg-brand-700 flex items-center justify-center text-gold-400" aria-hidden>
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
             </div>
             <div>
-              <Link to="/" className="font-semibold tracking-tight text-xl">Premier Prime</Link>
-              <p className="text-base text-zinc-500 -mt-0.5">Professional Cleaning Services</p>
+              <Link to="/" className="font-bold tracking-tight text-xl text-brand-800 leading-tight block">
+                PREMIER PRIME <span className="text-gold-600">SERVICES</span>
+              </Link>
+              <p className="text-xs text-zinc-500 -mt-0.5 tracking-wide uppercase">Professional Cleaning & Home Organization</p>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-6 text-lg">
@@ -162,8 +171,8 @@ const Layout = ({ children }) => {
                 <Link to="/login" className="text-lg px-4 py-2 rounded-lg hover:bg-zinc-100">
                   Login
                 </Link>
-                <Link to="/guest-booking" className="hidden sm:inline-flex px-6 py-3 text-lg rounded-xl bg-brand-600 text-white font-medium shadow hover:bg-brand-700">
-                  Book now
+                <Link to="/quote" className="hidden sm:inline-flex px-6 py-3 text-lg rounded-xl bg-brand-700 text-white font-medium shadow hover:bg-brand-800">
+                  Request a Free Quote
                 </Link>
               </>
             )}
@@ -176,46 +185,48 @@ const Layout = ({ children }) => {
       </main>
       
       {/* Footer */}
-      <footer className="mt-20 border-t border-zinc-100">
+      <footer className="mt-20 bg-brand-800 text-white">
         <div className="mx-auto max-w-7xl px-4 py-12 grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-12 w-12 rounded-full bg-brand-600 flex items-center justify-center text-white text-xl">
-                ✨
+              <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center text-gold-400 text-xl">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
               </div>
-              <p className="font-semibold text-xl">Premier Prime</p>
+              <p className="font-semibold text-xl">Premier Prime <span className="text-gold-400">Services</span></p>
             </div>
-            <p className="mt-3 text-zinc-600 text-lg">Trusted cleaners for homes and offices across Florida.</p>
+            <p className="mt-3 text-white/70 text-lg">Trusted cleaners for homes and offices across Palm Beach County.</p>
           </div>
           <div>
             <p className="font-semibold text-xl mb-4">Company</p>
-            <ul className="mt-3 space-y-2 text-zinc-600 text-lg">
-              <li><Link to="/" className="hover:text-brand-700">Home</Link></li>
-              <li><Link to="/guest-booking" className="hover:text-brand-700">Book</Link></li>
-              <li><Link to="/quote" className="hover:text-brand-700">Quote</Link></li>
+            <ul className="mt-3 space-y-2 text-white/70 text-lg">
+              <li><Link to="/" className="hover:text-gold-400">Home</Link></li>
+              <li><Link to="/guest-booking" className="hover:text-gold-400">Book</Link></li>
+              <li><Link to="/quote" className="hover:text-gold-400">Quote</Link></li>
             </ul>
           </div>
           <div>
             <p className="font-semibold text-xl mb-4">Services</p>
-            <ul className="mt-3 space-y-2 text-zinc-600 text-lg">
-              <li><Link to="/services/residential" className="hover:text-brand-700">Residential Cleaning</Link></li>
-              <li><Link to="/services/commercial" className="hover:text-brand-700">Office & Commercial</Link></li>
-              <li><Link to="/services/airbnb" className="hover:text-brand-700">Airbnb Turnover</Link></li>
-              <li><Link to="/services/custom" className="hover:text-brand-700">Custom Cleaning</Link></li>
-              <li><Link to="/services/post-renovation" className="hover:text-brand-700">Post-Renovation</Link></li>
-              <li><Link to="/services/move-in-out" className="hover:text-brand-700">Move In/Out</Link></li>
+            <ul className="mt-3 space-y-2 text-white/70 text-lg">
+              <li><Link to="/services/residential" className="hover:text-gold-400">Residential Cleaning</Link></li>
+              <li><Link to="/services/commercial" className="hover:text-gold-400">Office & Commercial</Link></li>
+              <li><Link to="/services/airbnb" className="hover:text-gold-400">Airbnb Turnover</Link></li>
+              <li><Link to="/services/custom" className="hover:text-gold-400">Custom Cleaning</Link></li>
+              <li><Link to="/services/post-renovation" className="hover:text-gold-400">Post-Renovation</Link></li>
+              <li><Link to="/services/move-in-out" className="hover:text-gold-400">Move In/Out</Link></li>
             </ul>
           </div>
           <div>
             <p className="font-semibold text-xl mb-4">Get in touch</p>
-            <ul className="mt-3 space-y-2 text-zinc-600 text-lg">
+            <ul className="mt-3 space-y-2 text-white/70 text-lg">
               <li>adaperez@premierprime.org</li>
               <li>(561) 452-3128</li>
-              <li>Florida, USA</li>
+              <li>Palm Beach County, FL</li>
             </ul>
           </div>
         </div>
-        <div className="text-base text-zinc-400 py-6 text-center">© {new Date().getFullYear()} Premier Prime — All rights reserved.</div>
+        <div className="text-base text-white/50 py-6 text-center border-t border-white/10">© {new Date().getFullYear()} Premier Prime Services — All rights reserved.</div>
       </footer>
     </div>
   );
