@@ -47,7 +47,7 @@ func main() {
 
 	// Middleware
 	r.Use(middleware.CORSMiddleware())
-	r.Use(middleware.LoggerToFile())
+	r.Use(middleware.RequestLogger())
 
 	// Public routes
 	public := r.Group("/api")

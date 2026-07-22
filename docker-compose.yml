@@ -14,6 +14,7 @@ services:
       - DB_USER=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-password}
       - DB_NAME=${DB_NAME:-cleaning_app}
+      - DB_SSL_MODE=${DB_SSL_MODE:-disable}
       - JWT_SECRET=${JWT_SECRET:-supersecretkeyfordevelopment}
       - JWT_EXPIRY=${JWT_EXPIRY:-24h}
     depends_on:

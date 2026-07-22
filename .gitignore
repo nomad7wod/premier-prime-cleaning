@@ -131,3 +131,6 @@ cmd/main
 
 # Go workspace file
 go.work
+# --- EC2 local artifacts (do not commit) ---
+backend/app
+backend/**/*.bak
