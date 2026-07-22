@@ -4,13 +4,16 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json ./
+COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Copy source code
 COPY . .
+
+# Give Node more memory for production build
+ENV NODE_OPTIONS=--max-old-space-size=1536
 
 # Build the application
 RUN npm run build
